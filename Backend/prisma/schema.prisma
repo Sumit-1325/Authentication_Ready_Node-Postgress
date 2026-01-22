@@ -1,10 +1,15 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+enum UserRole {
+  admin
+  subadmin
+  user
 }
 
 model User {
@@ -16,6 +21,8 @@ model User {
   email    String @unique
   fullName String?
   password String
+  role     UserRole @default(user)
+  avatar   String?
 
   // Authentication & Session
   refreshToken String?

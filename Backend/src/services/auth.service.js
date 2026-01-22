@@ -31,18 +31,23 @@ export const registerUser = async (userData) => {
   }
 };
 
-export const loginUser = async (email, password) => {
-  // 1. Find user
-  const user = await prisma.user.findUnique({
-    where: { email },
+export const loginUser = async (userName, password, email) => {
+  // 1. Find user by username or email
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { userName },
+        { email }
+      ]
+    }
   });
 
   if (!user) {
     throw new Error("User not found");
   }
 
-  // 2. Use your existing isPasswordCorrect function
-  const isMatch = await isPasswordCorrect(password, user.password);
+  // 2. Compare password with hashed password using bcrypt
+  const isMatch = await bcrypt.compare(password, user.password);
   
   if (!isMatch) {
     throw new Error("Invalid credentials");

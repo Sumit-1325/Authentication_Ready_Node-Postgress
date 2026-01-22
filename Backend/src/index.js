@@ -20,6 +20,10 @@ app.use(express.static("public"));
 
 app.use(cookieParser());
 
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.json({ status: "OK", message: "Server is running" });
+});
 
 app.use("/api/v1/users", userRouter);
 
