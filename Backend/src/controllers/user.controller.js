@@ -87,23 +87,32 @@ export const handleLogout = asyncHandler(async (req, res) => {
 export const handleForgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
-  const resetToken = await generateResetTokenAndSave(email);
-  const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+  try {
+    const resetToken = await generateResetTokenAndSave(email);
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
 
-  const htmlContent = `
-    <h1>Password Reset</h1>
-    <p>You requested a password reset. Click the link below to set a new password:</p>
-    <a href="${resetUrl}" style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none;">Reset Password</a>
-    <p>This link expires in 15 minutes.</p>
-  `;
+    const htmlContent = `
+      <h1>Password Reset</h1>
+      <p>You requested a password reset. Click the link below to set a new password:</p>
+      <a href="${resetUrl}" style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Reset Password</a>
+      <p>This link expires in 15 minutes.</p>
+      <p>If you did not request this, please ignore this email.</p>
+    `;
 
-  await sendEmail({
-    to: email,
-    subject: "Password Reset Request",
-    html: htmlContent
-  });
+    await sendEmail({
+      to: email,
+      subject: "Password Reset Request",
+      html: htmlContent
+    });
 
-  return res.status(200).json({ message: "Password reset link sent to your email" });
+    return res.status(200).json({ 
+      success: true,
+      message: "Password reset link sent to your email. Please check your inbox.",
+    });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    throw new apiError(error.message || "Failed to send password reset email", 500);
+  }
 });
 
 

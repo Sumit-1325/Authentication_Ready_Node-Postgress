@@ -8,8 +8,14 @@ const validatorMiddleware = (req, res, next) => {
     return next();
   }
   const extractedErrors = [];
-  errors.array().map((err) => extractedErrors.push({ [err.path]: err.msg }));
-  throw new apiError("Received data is not valid.", 400, extractedErrors);
+  errors.array().forEach((err) => {
+    extractedErrors.push({ 
+      field: err.path, 
+      message: err.msg,
+      value: err.value 
+    });
+  });
+  throw new apiError("Validation failed. Please check the errors below.", 400, extractedErrors);
 };
 
 export { validatorMiddleware };

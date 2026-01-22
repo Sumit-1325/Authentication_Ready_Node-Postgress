@@ -43,4 +43,26 @@ const userLoginValidators = () => {
   ];
 };
 
-export { userRegistrationValidators, userLoginValidators };
+const forgotPasswordValidators = () => {
+  return [
+    body("email")
+      .trim()
+      .notEmpty()
+      .withMessage("Email field cannot be empty.")
+      .isEmail()
+      .withMessage("Please provide a valid email address.")
+  ];
+};
+
+const resetPasswordValidators = () => {
+  return [
+    body("password")
+      .trim()
+      .notEmpty()
+      .withMessage("Password field cannot be empty.")
+      .isLength({ min: 8 })
+      .withMessage("Password must be at least 8 characters long.")
+  ];
+};
+
+export { userRegistrationValidators, userLoginValidators, forgotPasswordValidators, resetPasswordValidators };

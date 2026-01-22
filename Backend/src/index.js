@@ -27,6 +27,19 @@ app.get("/health", (req, res) => {
 
 app.use("/api/v1/users", userRouter);
 
+// Global Error Handler Middleware
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  const errors = err.errors || [];
+
+  res.status(statusCode).json({
+    success: false,
+    message: message,
+    ...(errors.length > 0 && { errors: errors })
+  });
+});
+
 const PORT = process.env.PORT || 8000;
 
 async function startServer() {
